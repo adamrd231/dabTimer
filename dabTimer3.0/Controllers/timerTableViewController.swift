@@ -112,6 +112,7 @@ class timerTableViewController: UITableViewController, UpDownTimerViewController
                             commit editingStyle: UITableViewCellEditingStyle,
                             forRowAt indexPath: IndexPath) {
         
+        
         timersObject?.items.remove(at: indexPath.row)
 
         let indexPaths = [indexPath]
@@ -128,7 +129,7 @@ class timerTableViewController: UITableViewController, UpDownTimerViewController
         navigationController?.pushViewController(controller, animated: true)
     }
     
-    
+
     //MARK:- Delegate Methods
     // UpDownTimerViewController - Delegate for returning the updated timer
     func returnTimerToWorkWith(_ controller: UpDownTimerViewController, didFinishWithTimer timer: UpDownTimer) {
@@ -148,17 +149,25 @@ class timerTableViewController: UITableViewController, UpDownTimerViewController
         navigationController?.popViewController(animated: true)
     }
     
+    func sortTimers() {
+        timersObject.items.sort(by:{ timers1, timers2 in
+            return timers1.name.localizedCompare(timers2.name) == .orderedAscending })
+    }
+    
     func addTimerViewController(_ controller: AddTimerViewController, didFinishAdding timerListItem: UpDownTimer) {
         
         let newRowIndex = timersObject?.items.count
         timersObject?.items.append(timerListItem)
+        
         
         let indexPath = IndexPath(row: newRowIndex!, section: 0)
         let indexPaths = [indexPath]
         tableView.insertRows(at: indexPaths, with: .automatic)
         
         navigationController?.popViewController(animated: true)
+        
     }
+
     
     func addTimerViewController(_ controller: AddTimerViewController, didFinishEditing timerListItem: UpDownTimer) {
         if let index = timersObject?.items.index(of: timerListItem) {
@@ -167,6 +176,7 @@ class timerTableViewController: UITableViewController, UpDownTimerViewController
                 configureText(for: cell, with: timerListItem)
             }
         }
+        
         navigationController?.popViewController(animated: true)
     }
 }

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SpriteKit
 
 class UpDownTimer: NSObject, Codable {
     
@@ -42,9 +43,11 @@ class UpDownTimer: NSObject, Codable {
         if upDownTimer.heatUpTimer > 0 {
             upDownTimer.heatUpTimer -= 1
             heat.text = String(upDownTimer.heatUpTimer)
+    
         }
         // If the heat timer is 0, then run the Cool Down Timer
         if upDownTimer.heatUpTimer == 0 && upDownTimer.coolDownTimer > 0 {
+
             upDownTimer.coolDownTimer -= 1
             cool.text = String(upDownTimer.coolDownTimer)
 
@@ -55,28 +58,15 @@ class UpDownTimer: NSObject, Codable {
             }
         }
     }
-           
+    
+    func flashAnimation() -> SKAction {
+        let duration = 0.2
+        let fadeOut = SKAction.fadeAlpha(to: 0.0, duration: duration)
+        let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: duration)
+        let blink = SKAction.sequence([fadeOut, fadeIn])
+        return SKAction.repeat(blink, count: 5)
+    }
         
- 
 }
-
-
-    // screen flash
-//    func flash() {
-//        if let wnd = self.view{
-//
-//            var v = UIView(frame: wnd.bounds)
-//            v.backgroundColor = UIColor.white
-//            v.alpha = 1
-//
-//            wnd.addSubview(v)
-//            UIView.animate(withDuration: 1.0, animations: {
-//                v.alpha = 0.0
-//            }, completion: {(finished:Bool) in
-//                print("inside")
-//                v.removeFromSuperview()
-//            })
-//        }
-//    }
 
 

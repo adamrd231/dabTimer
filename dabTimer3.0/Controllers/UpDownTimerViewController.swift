@@ -28,6 +28,9 @@ class UpDownTimerViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var stopOutlet: UIButton!
     @IBOutlet weak var startOutlet: UIButton!
     
+    var heatTimerFlashed = false
+    var coolTimerFlashed = false
+    
     var timer = Timer()
     
     //MARK:- Delegate and Timer Object
@@ -84,9 +87,21 @@ class UpDownTimerViewController: UIViewController, UITextFieldDelegate {
     @objc func Clock() {
         
         if let timerToWorkWith = timerToWorkWith {
+            
             timerToWorkWith.runTimers(upDownTimer: timerToWorkWith, heat: heatUpLabel, cool: coolDownLabel, timer: timer)
-        }
+            
+            if heatTimerFlashed == false && heatUpLabel.text == "0" {
+                heatTimerFlashed = true
+                flash()
+            }
+            
+            if coolTimerFlashed == false && coolDownLabel.text == "0" {
+                coolTimerFlashed = true
+                flash()
+                reset()
+            }
        
+        }
     }
     
     
@@ -99,6 +114,7 @@ class UpDownTimerViewController: UIViewController, UITextFieldDelegate {
             if timerToWorkWith.timerIsRunning == true {
                 return
             } else {
+
                 timerToWorkWith.heatTimerSaved = timerToWorkWith.heatUpTimer
                 timerToWorkWith.coolTimerSaved = timerToWorkWith.coolDownTimer
                 timerToWorkWith.timerIsRunning = false
@@ -115,6 +131,9 @@ class UpDownTimerViewController: UIViewController, UITextFieldDelegate {
     
     
     @IBAction func start(_ sender: Any) {
+        
+        coolTimerFlashed = false
+        heatTimerFlashed = false
         
         if let timerToWorkWith = timerToWorkWith {
             // Check to see if the timer is running
@@ -151,7 +170,7 @@ class UpDownTimerViewController: UIViewController, UITextFieldDelegate {
     }
 
    
-    @IBAction func reset(_ sender: Any) {
+    @IBAction func reset() {
         
         if let timerToWorkWith = timerToWorkWith {
             timerToWorkWith.resetTimers(upDownTimer: timerToWorkWith, heat: heatUpLabel, cool: coolDownLabel, timer: timer)
@@ -168,5 +187,23 @@ class UpDownTimerViewController: UIViewController, UITextFieldDelegate {
     }
 
 
+    
+     //screen flash
+        func flash() {
+            if let wnd = self.view {
+    
+                var v = UIView(frame: wnd.bounds)
+                v.backgroundColor = UIColor.white
+                v.alpha = 1
+    
+                wnd.addSubview(v)
+                UIView.animate(withDuration: 1.0, animations: {
+                    v.alpha = 0.0
+                }, completion: {(finished:Bool) in
+                    print("inside")
+                    v.removeFromSuperview()
+                })
+            }
+        }
 
 }
