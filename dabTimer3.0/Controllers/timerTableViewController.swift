@@ -23,14 +23,12 @@ class timerTableViewController: UITableViewController, UpDownTimerViewController
         
         //MARK:= google Adwords
         // Test AdMob Banner ID
-        GoogleBannerViewMain.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+        //GoogleBannerViewMain.adUnitID = "ca-app-pub-3940256099942544/2934735716"
         
         // Live AdMob Banner ID
-        //GoogleBannerView.adUnitID = "ca-app-pub-3940256099942544/6300978111"
-        //GoogleBannerView.rootViewController = self
+        GoogleBannerViewMain.adUnitID = "ca-app-pub-3940256099942544/6300978111"
         GoogleBannerViewMain.rootViewController = self
         GoogleBannerViewMain.load(GADRequest())
-        //GoogleBannerView.load(GADRequest())
     }
 
     @IBAction func addTimer(_ sender: Any) {

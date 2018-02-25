@@ -24,11 +24,11 @@ class MainTableViewController: UITableViewController, EditViewControllerDelegate
         
         //MARK:= google Adwords
         // Test AdMob Banner ID
-        GoogleBannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
+        //GoogleBannerView.adUnitID = "ca-app-pub-3940256099942544/2934735716"
         
         
         // Live AdMob Banner ID
-        //GoogleBannerView.adUnitID = "ca-app-pub-3940256099942544/6300978111"
+        GoogleBannerView.adUnitID = "ca-app-pub-3940256099942544/6300978111"
         GoogleBannerView.rootViewController = self
         GoogleBannerView.load(GADRequest())
     }
