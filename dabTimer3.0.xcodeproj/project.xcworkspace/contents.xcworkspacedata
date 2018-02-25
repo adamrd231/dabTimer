@@ -2,15 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:/Users/adamreed/Documents/xcode/dabTimer/dabTimer3.0/MainTableViewController.swift">
-   </FileRef>
-   <FileRef
-      location = "group:/Users/adamreed/Documents/xcode/dabTimer/dabTimer3.0/MainViewTableViewController.swift">
-   </FileRef>
-   <FileRef
-      location = "group:/Users/adamreed/Documents/xcode/dabTimer/dabTimer3.0/Resources/Main.storyboard">
-   </FileRef>
-   <FileRef
       location = "self:">
    </FileRef>
 </Workspace>

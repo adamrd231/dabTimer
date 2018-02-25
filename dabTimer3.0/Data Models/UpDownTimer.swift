@@ -23,20 +23,23 @@ class UpDownTimer: NSObject, Codable {
     // Reset the timers back to the default time.
     func resetTimers(upDownTimer: UpDownTimer, heat: UILabel, cool: UILabel, timer: Timer) {
         
-        upDownTimer.heatUpTimer = heatTimerSaved
-        heat.text = String(heatUpTimer)
+        if upDownTimer.timerIsRunning == true {
+            
+            upDownTimer.heatUpTimer = heatTimerSaved
+            heat.text = String(heatUpTimer)
+            
+            upDownTimer.coolDownTimer = coolTimerSaved
+            cool.text = String(coolDownTimer)
+            
+
+        } else {
+            return
+        }
         
-        upDownTimer.coolDownTimer = coolTimerSaved
-        cool.text = String(coolDownTimer)
         
-        upDownTimer.timerIsRunning = false
-        timer.invalidate()
         
     }
     
-    func toggleTimerIsRunning() {
-        timerIsRunning = !timerIsRunning
-    }
     
     func runTimers(upDownTimer: UpDownTimer, heat: UILabel, cool: UILabel, timer: Timer) {
         // Run the Heat Up Timer
@@ -54,17 +57,8 @@ class UpDownTimer: NSObject, Codable {
             // When the cool down timer reaches 0, invalidate the timer to end it.
             if upDownTimer.coolDownTimer == 0 {
                 upDownTimer.timerIsRunning = false
-                timer.invalidate()
             }
         }
-    }
-    
-    func flashAnimation() -> SKAction {
-        let duration = 0.2
-        let fadeOut = SKAction.fadeAlpha(to: 0.0, duration: duration)
-        let fadeIn = SKAction.fadeAlpha(to: 1.0, duration: duration)
-        let blink = SKAction.sequence([fadeOut, fadeIn])
-        return SKAction.repeat(blink, count: 5)
     }
         
 }

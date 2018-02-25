@@ -163,7 +163,8 @@ class timerTableViewController: UITableViewController, UpDownTimerViewController
         let indexPath = IndexPath(row: newRowIndex!, section: 0)
         let indexPaths = [indexPath]
         tableView.insertRows(at: indexPaths, with: .automatic)
-        
+        sortTimers()
+        tableView.reloadData()
         navigationController?.popViewController(animated: true)
         
     }

@@ -27,6 +27,7 @@ class UpDownTimerViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var coolDownStepperOutlet: UIStepper!
     @IBOutlet weak var stopOutlet: UIButton!
     @IBOutlet weak var startOutlet: UIButton!
+    @IBOutlet weak var doneBarButton: UIBarButtonItem!
     
     var heatTimerFlashed = false
     var coolTimerFlashed = false
@@ -42,6 +43,24 @@ class UpDownTimerViewController: UIViewController, UITextFieldDelegate {
     var audioPlayer = AVAudioPlayer()
     
     
+    func buttonOpacityLow() {
+        
+        stopOutlet.alpha = 1.0
+        startOutlet.alpha = 0.6
+        heatUpStepperOutlet.alpha = 0.6
+        coolDownStepperOutlet.alpha = 0.6
+        
+    }
+    
+    func buttonOpacityNormal() {
+        
+        stopOutlet.alpha = 0.6
+        startOutlet.alpha = 1.0
+        heatUpStepperOutlet.alpha = 1.0
+        coolDownStepperOutlet.alpha = 1.0
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.prefersLargeTitles = false
@@ -54,6 +73,8 @@ class UpDownTimerViewController: UIViewController, UITextFieldDelegate {
             coolDownStepperOutlet.value = Double(timerToWorkWith.coolDownTimer)
             
         }
+        
+        stopOutlet.alpha = 0.6
         
         //MARK:= google Adwords
         // Test AdMob Banner ID
@@ -88,22 +109,85 @@ class UpDownTimerViewController: UIViewController, UITextFieldDelegate {
         
         if let timerToWorkWith = timerToWorkWith {
             
-            timerToWorkWith.runTimers(upDownTimer: timerToWorkWith, heat: heatUpLabel, cool: coolDownLabel, timer: timer)
-            
-            if heatTimerFlashed == false && heatUpLabel.text == "0" {
-                heatTimerFlashed = true
-                flash()
+            if timerToWorkWith.timerIsRunning {
+                timerToWorkWith.runTimers(upDownTimer: timerToWorkWith, heat: heatUpLabel, cool: coolDownLabel, timer: timer)
+                
+                // Flash on 0 for both timers.
+                if heatTimerFlashed == false && heatUpLabel.text == "0" {
+                    heatTimerFlashed = true
+                    flash()
+                } else if coolTimerFlashed == false && coolDownLabel.text == "0" {
+                    coolTimerFlashed = true
+                    flash()
+                }
+                
+            } else {
+                
+                timerToWorkWith.heatUpTimer = timerToWorkWith.heatTimerSaved
+                heatUpLabel.text = String(timerToWorkWith.heatUpTimer)
+                
+                timerToWorkWith.coolDownTimer = timerToWorkWith.coolTimerSaved
+                coolDownLabel.text = String(timerToWorkWith.coolDownTimer)
+                
+                print("Invalidate Timer through Clock")
+                timer.invalidate()
+                timerToWorkWith.timerIsRunning = false
+                buttonOpacityNormal()
             }
-            
-            if coolTimerFlashed == false && coolDownLabel.text == "0" {
-                coolTimerFlashed = true
-                flash()
-                reset()
-            }
-       
         }
     }
     
+    
+    @IBAction func start(_ sender: Any) {
+        
+        coolTimerFlashed = false
+        heatTimerFlashed = false
+      
+        if let timerToWorkWith = timerToWorkWith {
+            
+            if timerToWorkWith.heatUpTimer == 0 || timerToWorkWith.coolDownTimer == 0 {
+                return
+            }
+            
+            // Check to see if the timer is running
+            if timerToWorkWith.timerIsRunning {
+                return
+            } else {
+                buttonOpacityLow()
+                // If not, start the timer and set timerIsRunning to true
+                timerToWorkWith.timerIsRunning = true
+                
+                // Save the current timers to the saved variable, so if the user resets, it will save any changes to the timer
+                timerToWorkWith.heatTimerSaved = timerToWorkWith.heatUpTimer
+                timerToWorkWith.coolTimerSaved = timerToWorkWith.coolDownTimer
+                
+                // Run the timers using the clock function
+                timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(Clock), userInfo: nil, repeats: true)
+                
+            }
+        }
+        
+    }
+    
+    @IBAction func reset() {
+        print("reset")
+        
+        if let timerToWorkWith = timerToWorkWith {
+            timerToWorkWith.resetTimers(upDownTimer: timerToWorkWith, heat: heatUpLabel, cool: coolDownLabel, timer: timer)
+            heatUpStepperOutlet.value = Double(timerToWorkWith.heatUpTimer)
+            coolDownStepperOutlet.value = Double(timerToWorkWith.coolDownTimer)
+            
+            if timerToWorkWith.timerIsRunning == true {
+                timerToWorkWith.timerIsRunning = false
+                buttonOpacityNormal()
+                print("Reset Button Invalidate Timer")
+                timer.invalidate()
+            }
+        }
+        
+        
+        
+    }
     
     //MARK:- UI Button Actions
     
@@ -114,7 +198,7 @@ class UpDownTimerViewController: UIViewController, UITextFieldDelegate {
             if timerToWorkWith.timerIsRunning == true {
                 return
             } else {
-
+                
                 timerToWorkWith.heatTimerSaved = timerToWorkWith.heatUpTimer
                 timerToWorkWith.coolTimerSaved = timerToWorkWith.coolDownTimer
                 timerToWorkWith.timerIsRunning = false
@@ -129,34 +213,18 @@ class UpDownTimerViewController: UIViewController, UITextFieldDelegate {
         
     }
     
-    
-    @IBAction func start(_ sender: Any) {
-        
-        coolTimerFlashed = false
-        heatTimerFlashed = false
-        
-        if let timerToWorkWith = timerToWorkWith {
-            // Check to see if the timer is running
-            if timerToWorkWith.timerIsRunning == false {
-                // If not, start the timer and set timerIsRunning to true
-                timerToWorkWith.timerIsRunning = true
-                // Save the current timers to the saved variable, so if the user resets, it will save any changes to the timer
-                timerToWorkWith.heatTimerSaved = timerToWorkWith.heatUpTimer
-                timerToWorkWith.coolTimerSaved = timerToWorkWith.coolDownTimer
-                // Run the timers using the clock function
-                timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(Clock), userInfo: nil, repeats: true)
-                
-            }
-        }
-        
-    }
-    
     @IBAction func heatUpStepper(_ sender: UIStepper) {
         
         if let timerToWorkWith = timerToWorkWith {
-            timerToWorkWith.heatUpTimer = Int(sender.value)
-            timerToWorkWith.heatUpTimer = Int(sender.value)
-            heatUpLabel.text = String(timerToWorkWith.heatUpTimer)
+            
+            if timerToWorkWith.timerIsRunning {
+                return
+            } else {
+                timerToWorkWith.heatUpTimer = Int(sender.value)
+                timerToWorkWith.heatTimerSaved = timerToWorkWith.heatUpTimer
+                
+                heatUpLabel.text = String(timerToWorkWith.heatUpTimer)
+            }
         }
     }
     
@@ -164,20 +232,15 @@ class UpDownTimerViewController: UIViewController, UITextFieldDelegate {
     @IBAction func coolDownStepper(_ sender: UIStepper) {
         
         if let timerToWorkWith = timerToWorkWith {
-            timerToWorkWith.coolDownTimer = Int(sender.value)
-            coolDownLabel.text = String(timerToWorkWith.coolDownTimer)
+            
+            if timerToWorkWith.timerIsRunning {
+                return
+            } else {
+                timerToWorkWith.coolDownTimer = Int(sender.value)
+                timerToWorkWith.coolTimerSaved = timerToWorkWith.coolDownTimer
+                coolDownLabel.text = String(timerToWorkWith.coolDownTimer)
+            }
         }
-    }
-
-   
-    @IBAction func reset() {
-        
-        if let timerToWorkWith = timerToWorkWith {
-            timerToWorkWith.resetTimers(upDownTimer: timerToWorkWith, heat: heatUpLabel, cool: coolDownLabel, timer: timer)
-            heatUpStepperOutlet.value = Double(timerToWorkWith.heatUpTimer)
-            coolDownStepperOutlet.value = Double(timerToWorkWith.coolDownTimer)
-        }
-        
     }
 
     
@@ -200,7 +263,7 @@ class UpDownTimerViewController: UIViewController, UITextFieldDelegate {
                 UIView.animate(withDuration: 1.0, animations: {
                     v.alpha = 0.0
                 }, completion: {(finished:Bool) in
-                    print("inside")
+                    print("Flash!")
                     v.removeFromSuperview()
                 })
             }
